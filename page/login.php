@@ -5,6 +5,11 @@
 	// Kõik funktsioonid, kus tegeleme andmebaasiga
 	require_once("../functions.php");
 	
+	//kui kasutaja on sisseloginud, suunan data.php lehele
+	if(isset($_SESSION["logged_in_user_id"])){
+		header("Location: data.php");
+	}
+	
 	// muutujad errorite jaoks
 	$email_error = "";
 	$password_error = "";
