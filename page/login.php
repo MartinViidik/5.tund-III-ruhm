@@ -2,10 +2,8 @@
 	// LOGIN.PHP
 	// errori muutujad peavad enne if'i olemas olema :)
 	
-	// Loon andmebaasi ühenduse
-	require_once("../../config.php");
-	$database = "if15_martin";
-	$mysqli = new mysqli($servername, $username, $password, $database);
+	// Kõik funktsioonid, kus tegeleme andmebaasiga
+	require_once("../functions.php");
 	
 	// muutujad errorite jaoks
 	$email_error = "";
@@ -35,8 +33,8 @@
 				$email_error = "This field is required";
 			}else{
 				// kõik korras
-				// test_input eemaldab pahataltikud osad
-				$email = test_input($_POST["email"]);
+				// test_input eemaldab pahatahltikud osad
+				$email = cleanInput($_POST["email"]);
 				
 				}
 				
@@ -45,7 +43,7 @@
 				
 			}else{
 				
-				$username = test_input($_POST["username"]);
+				$username = cleanInput($_POST["username"]);
 				
 				}
 				
@@ -53,7 +51,7 @@
 				$password_error = "This field is required";
 			}else{
 			
-				$password = test_input($_POST["password"]);
+				$password = cleanInput($_POST["password"]);
 				
 			}
 			// kontrollin et ei oleks ühtegi errorit
@@ -61,23 +59,8 @@
 				
 			$hash = hash("sha512", $password);
 			
-			$stmt = $mysqli->prepare("SELECT id, email, username FROM martin_login2 WHERE email=?, username=? AND password=?");
-			$stmt->bind_param("sss",$email, $username, $password, $hash);
-			
-			// Muutujad tulemustele
-			$stmt->bind_result($id_from_db, $username_from_db, $email_from_db);
-			$stmt->execute();
-			
-			//Kontrollin kas tulemusi leiti
-				if($stmt->fetch()){
-					//andmebaasis oli midagi
-						echo "Email, username ja parool õiged, kasutaja id=".$id_from_db;
-					}else{
-						// ei leidnud
-						echo "Valed andmed!";
-				}
-				
-				$stmt->close();
+			// kasutaja loomise fn, failist functions.php
+				loginUser($username, $email, $password);
 				
 		
 			}
@@ -122,12 +105,10 @@
 				// Räsi paroolist mis salvestame andmebaasi
 				$hash = hash("sha512", $reg_password);
 				
-				// Salvestame andmebaasi"
-				$stmt =  $mysqli->prepare("INSERT INTO martin_login2 (email, username, password) VALUES (?,?,?)");
-				// Asendame küsimärgid õigete andmetega
-				$stmt->bind_param("sss", $reg_email, $reg_username, $hash);
-				$stmt->execute();
-				$stmt->close();
+				// kasutaja loomise fn, failist functions.php
+				createUser($reg_username, $reg_email, $reg_password);
+				
+
 		}
 	}
 	
@@ -146,8 +127,6 @@
 	$page_file_name = "login.php";
 	require_once("../header.php");
 	
-	// paneme ühenduse kinni
-	$mysqli->close();
 	
 ?>
 
