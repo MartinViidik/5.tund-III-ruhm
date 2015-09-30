@@ -51,7 +51,20 @@
 		$mysqli->close();
 		
 	}
+	
+	//Kuigi muutujad on erinevad, jõuab väärtus kohale
+	function addCarPlate($car_plate, $car_color){
+		$mysqli = new mysqli($GLOBALS["servername"], $GLOBALS["server_username"], $GLOBALS["server_password"], $GLOBALS["database"]);
+		$stmt =  $mysqli->prepare("INSERT INTO car_plates (user_id, number_plate, color) VALUES (?,?,?)");
+				echo $mysqli->error;
 
-	
-	
+		$stmt->bind_param("iss", $_SESSION["logged_in_user_id"],$car_plate, $car_color);
+		$stmt->execute();
+		echo $stmt->error;
+		$stmt->close();
+		
+		$mysqli->close();
+
+	}
+
 ?>
